@@ -29,6 +29,53 @@ async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
+        const db = client.db('online_ticket_db');
+        const ticketCollection = db.collection('allTicket');
+        const popularCollection = db.collection('popularRoute');
+
+        //api
+
+        app.get('/tickets', async (req, res) => {
+
+            const query = {};
+
+            const cursor = ticketCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+
+        })
+
+        // latest 
+        app.get('/newTickets', async (req, res) => {
+
+            const query = {};
+            const cursor = ticketCollection.find(query).sort({ createdAt: -1 }).limit(6);
+            const result = await cursor.toArray();
+            res.send(result);
+
+        })
+
+        // for Advertisement
+        app.get('/advertisementTickets', async (req, res) => {
+
+            const query = { isAdvertised: true };
+            const cursor = ticketCollection.find(query).limit(6);
+            const result = await cursor.toArray();
+            res.send(result);
+
+        })
+
+        //ticket add
+
+        app.post('/tickets', async (req, res) => {
+            const ticket = req.body;
+            const result = await ticketCollection.insertOne(ticket);
+            res.send(result)
+        })
+
+
+
+
 
 
 
