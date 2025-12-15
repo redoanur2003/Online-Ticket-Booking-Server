@@ -33,6 +33,7 @@ async function run() {
         const ticketCollection = db.collection('allTicket');
         const popularCollection = db.collection('popularRoute');
         const factCollection = db.collection('factToChoose');
+        const userCollection = db.collection('users');
 
         //api
 
@@ -108,8 +109,21 @@ async function run() {
 
         })
 
+        // User api
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            user.role = 'user';
+            user.createdAt = new Date();
+            const email = user.email;
+            const userExists = await userCollection.findOne({ email })
 
+            if (userExists) {
+                return res.send({ message: 'user exists' })
+            }
 
+            const result = await userCollection.insertOne(user);
+            res.send(result);
+        })
 
 
         // Send a ping to confirm a successful connection
