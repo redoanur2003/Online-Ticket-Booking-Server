@@ -32,6 +32,7 @@ async function run() {
         const db = client.db('online_ticket_db');
         const ticketCollection = db.collection('allTicket');
         const popularCollection = db.collection('popularRoute');
+        const factCollection = db.collection('factToChoose');
 
         //api
 
@@ -73,7 +74,39 @@ async function run() {
             res.send(result)
         })
 
+        //Popular route
 
+        app.post('/popularRoute', async (req, res) => {
+            const route = req.body;
+            const result = await popularCollection.insertOne(route);
+            res.send(result)
+        })
+
+        app.get('/popularRoute', async (req, res) => {
+
+            const query = {};
+            const cursor = popularCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+
+        })
+
+        //why us route
+
+        app.post('/factRoute', async (req, res) => {
+            const route = req.body;
+            const result = await factCollection.insertOne(route);
+            res.send(result)
+        })
+
+        app.get('/factRoute', async (req, res) => {
+
+            const query = {};
+            const cursor = factCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+
+        })
 
 
 
