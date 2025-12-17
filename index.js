@@ -34,9 +34,30 @@ async function run() {
         const popularCollection = db.collection('popularRoute');
         const factCollection = db.collection('factToChoose');
         const userCollection = db.collection('users');
+        const destinationCollection = db.collection('destination');
 
         //api
 
+        //Destination
+        app.post('/destination', async (req, res) => {
+            const data = req.body;
+            const query = data;
+            const result = await destinationCollection.insertMany(query);
+            res.send(result);
+
+        })
+
+        app.get('/destination', async (req, res) => {
+
+            const query = {};
+
+            const cursor = destinationCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+
+        })
+
+        //All ticket
         app.get('/tickets', async (req, res) => {
 
             const query = {};
