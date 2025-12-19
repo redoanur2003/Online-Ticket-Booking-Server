@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const port = process.env.PORT || 1818;
 
@@ -35,6 +35,7 @@ async function run() {
         const factCollection = db.collection('factToChoose');
         const userCollection = db.collection('users');
         const destinationCollection = db.collection('destination');
+        const ticketPurchaseCollection = db.collection('purchaseTicket');
 
         //api
 
@@ -68,6 +69,20 @@ async function run() {
 
         })
 
+        //single ticket api
+        app.get('/tickets/:id', async (req, res) => {
+
+            const id = req.params.id;
+            let result;
+
+            result = await ticketCollection.findOne({ _id: new ObjectId(id) });
+            if (!result) {
+                result = await ticketCollection.findOne({ _id: id });
+            }
+            res.send(result);
+
+        })
+
         // latest 
         app.get('/newTickets', async (req, res) => {
 
@@ -93,6 +108,39 @@ async function run() {
         app.post('/tickets', async (req, res) => {
             const ticket = req.body;
             const result = await ticketCollection.insertOne(ticket);
+            res.send(result)
+        })
+
+        //ticket info update
+
+        app.patch('/tickets/:id', async (req, res) => {
+
+            const id = req.params.id;
+            const { q } = req.body
+            console.log(q);
+            const update = {
+                $set: {
+                    quantity: q
+                }
+            };
+            let result;
+
+            result = await ticketCollection.updateOne({ _id: new ObjectId(id) }, update);
+            if (result.matchedCount === 0) {
+                result = await ticketCollection.updateOne({ _id: id }, update);
+            }
+
+            console.log('result ', result)
+            res.send(result);
+
+        })
+
+        // ticketPurchaseInfo api
+
+        app.post('/ticketPurchaseInfo', async (req, res) => {
+            const purchaseInfo = req.body;
+            // console.log("ticketPurchaseInfo ", purchaseInfo);
+            const result = await ticketPurchaseCollection.insertOne(purchaseInfo);
             res.send(result)
         })
 
