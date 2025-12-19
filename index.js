@@ -144,6 +144,15 @@ async function run() {
             res.send(result)
         })
 
+        app.get('/ticketPurchaseInfo/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            console.log(query)
+            const cursor = ticketPurchaseCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
         //Popular route
 
         app.post('/popularRoute', async (req, res) => {
@@ -192,6 +201,20 @@ async function run() {
 
             const result = await userCollection.insertOne(user);
             res.send(result);
+        })
+
+        app.get('/users/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            const result = await userCollection.findOne(query);
+            res.send(result)
+        })
+
+        app.get('/users/:email/role', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            const user = await userCollection.findOne(query);
+            res.send({ role: user?.role || 'user' })
         })
 
 
