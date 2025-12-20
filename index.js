@@ -65,20 +65,34 @@ async function run() {
 
             const cursor = ticketCollection.find(query);
             const result = await cursor.toArray();
+            // console.log(result)
+            res.send(result);
+
+        })
+
+        //ticket find by user
+        app.get('/tickets/user/:email', async (req, res) => {
+
+            const vendorEmail = req.params.email;
+            const query = { vendorEmail }
+            const cursor = ticketCollection.find(query);
+            const result = await cursor.toArray();
             res.send(result);
 
         })
 
         //single ticket api
-        app.get('/tickets/:id', async (req, res) => {
+        app.get('/tickets/id/:id', async (req, res) => {
 
             const id = req.params.id;
+            console.log("id: ", id);
             let result;
 
             result = await ticketCollection.findOne({ _id: new ObjectId(id) });
             if (!result) {
                 result = await ticketCollection.findOne({ _id: id });
             }
+            console.log(result);
             res.send(result);
 
         })
@@ -86,8 +100,8 @@ async function run() {
         // latest 
         app.get('/newTickets', async (req, res) => {
 
-            const query = {};
-            const cursor = ticketCollection.find(query).sort({ createdAt: -1 }).limit(6);
+            const query = { verificationStatus: "approved" };
+            const cursor = ticketCollection.find(query).sort({ createdAt: 1 }).limit(6);
             const result = await cursor.toArray();
             res.send(result);
 
@@ -143,11 +157,18 @@ async function run() {
             const result = await ticketPurchaseCollection.insertOne(purchaseInfo);
             res.send(result)
         })
+        app.get('/ticketPurchaseInfo', async (req, res) => {
+            const query = {}
+            // console.log("ticketPurchaseInfo ", purchaseInfo);
+            const cursor = ticketPurchaseCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        })
 
         app.get('/ticketPurchaseInfo/:email', async (req, res) => {
             const email = req.params.email;
             const query = { email }
-            console.log(query)
+            // console.log(query)
             const cursor = ticketPurchaseCollection.find(query);
             const result = await cursor.toArray();
             res.send(result);
