@@ -85,14 +85,14 @@ async function run() {
         app.get('/tickets/id/:id', async (req, res) => {
 
             const id = req.params.id;
-            console.log("id: ", id);
+            // console.log("id: ", id);
             let result;
 
             result = await ticketCollection.findOne({ _id: new ObjectId(id) });
             if (!result) {
                 result = await ticketCollection.findOne({ _id: id });
             }
-            console.log(result);
+            // console.log(result);
             res.send(result);
 
         })
@@ -101,7 +101,7 @@ async function run() {
         app.get('/newTickets', async (req, res) => {
 
             const query = { verificationStatus: "approved" };
-            const cursor = ticketCollection.find(query).sort({ createdAt: 1 }).limit(6);
+            const cursor = ticketCollection.find(query).sort({ createdAt: -1 }).limit(6);
             const result = await cursor.toArray();
             res.send(result);
 
@@ -131,7 +131,7 @@ async function run() {
 
             const id = req.params.id;
             const { q } = req.body
-            console.log(q);
+            // console.log(q);
             const update = {
                 $set: {
                     quantity: q
@@ -144,7 +144,58 @@ async function run() {
                 result = await ticketCollection.updateOne({ _id: id }, update);
             }
 
-            console.log('result ', result)
+            // console.log('result ', result)
+            res.send(result);
+
+        })
+
+        //admin
+        app.patch('/tickets/admin/:id', async (req, res) => {
+
+            const id = req.params.id;
+            // console.log("id: ", id);
+            const data = req.body;
+            // console.log("data ", data);
+            const update = {
+                $set: {
+                    verificationStatus: data.status
+                }
+            };
+            // console.log("update: ", update);
+            let result;
+
+            result = await ticketCollection.updateOne({ _id: new ObjectId(id) }, update);
+            if (result.matchedCount === 0) {
+                result = await ticketCollection.updateOne({ _id: id }, update);
+            }
+
+            // console.log('result ', result)
+            res.send(result);
+
+        })
+
+        //add advertised ticket
+
+        app.patch('/tickets/admin/advertised/:id', async (req, res) => {
+
+            const id = req.params.id;
+            console.log("id: ", id);
+            const data = req.body;
+            console.log("data ", data);
+            const update = {
+                $set: {
+                    isAdvertised: data.status
+                }
+            };
+            console.log("update: ", update);
+            let result;
+
+            result = await ticketCollection.updateOne({ _id: new ObjectId(id) }, update);
+            if (result.matchedCount === 0) {
+                result = await ticketCollection.updateOne({ _id: id }, update);
+            }
+
+            // console.log('result ', result)
             res.send(result);
 
         })
@@ -154,7 +205,7 @@ async function run() {
         app.patch('/tickets/vendor/:id', async (req, res) => {
             const id = req.params.id;
             const data = req.body;
-            console.log("update data: ", data);
+            // console.log("update data: ", data);
 
             const update = {
                 $set: {
@@ -174,7 +225,7 @@ async function run() {
                     updatedAt: new Date()
                 }
             }
-            console.log("update data: ", update);
+            // console.log("update data: ", update);
 
             let result;
             if (ObjectId.isValid(id)) {
@@ -186,7 +237,7 @@ async function run() {
                 result = await ticketCollection.updateOne({ _id: id }, update);
             }
 
-            console.log("result is: ", result)
+            // console.log("result is: ", result)
             res.send(result)
         })
 
@@ -205,7 +256,7 @@ async function run() {
 
             }
 
-            console.log("result is: ", result)
+            // console.log("result is: ", result)
             res.send(result)
         })
 
@@ -218,12 +269,38 @@ async function run() {
             const result = await ticketPurchaseCollection.insertOne(purchaseInfo);
             res.send(result)
         })
+
         app.get('/ticketPurchaseInfo', async (req, res) => {
             const query = {}
             // console.log("ticketPurchaseInfo ", purchaseInfo);
             const cursor = ticketPurchaseCollection.find(query);
             const result = await cursor.toArray();
             res.send(result);
+        })
+        app.patch('/ticketPurchaseInfo/status/:id', async (req, res) => {
+            const id = req.params.id
+            const object = req.body;
+            // console.log("ticketPurchaseInfo ", object);
+
+            const update = {
+                $set: {
+                    status: object.status
+                }
+            }
+
+            let result;
+            if (ObjectId.isValid(id)) {
+                result = await ticketPurchaseCollection.updateOne({ _id: new ObjectId(id) }, update);
+                if (result.matchedCount === 0) {
+                    result = await ticketPurchaseCollection.updateOne({ _id: id }, update);
+                }
+            } else {
+                result = await ticketPurchaseCollection.updateOne({ _id: id }, update);
+            }
+
+            console.log("result is: ", result)
+            res.send(result);
+
         })
 
         app.get('/ticketPurchaseInfo/:email', async (req, res) => {
@@ -292,6 +369,14 @@ async function run() {
             res.send(result)
         })
 
+        //all user
+        app.get('/users', async (req, res) => {
+            const query = {}
+            const cursor = userCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
         app.get('/users/:email/role', async (req, res) => {
             const email = req.params.email;
             const query = { email }
@@ -299,6 +384,31 @@ async function run() {
             res.send({ role: user?.role || 'user' })
         })
 
+        //admin update the user role
+
+        app.patch('/users/admin/:id', async (req, res) => {
+
+            const id = req.params.id;
+            console.log("id: ", id);
+            const data = req.body;
+            console.log("data ", data);
+            const update = {
+                $set: {
+                    role: data.status
+                }
+            };
+            console.log("update: ", update);
+            let result;
+
+            result = await userCollection.updateOne({ _id: new ObjectId(id) }, update);
+            if (result.matchedCount === 0) {
+                result = await userCollection.updateOne({ _id: id }, update);
+            }
+
+            // console.log('result ', result)
+            res.send(result);
+
+        })
 
         // Send a ping to confirm a successful connection
         // await client.db("admin").command({ ping: 1 });
