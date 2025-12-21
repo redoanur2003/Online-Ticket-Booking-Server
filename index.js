@@ -179,15 +179,15 @@ async function run() {
         app.patch('/tickets/admin/advertised/:id', async (req, res) => {
 
             const id = req.params.id;
-            console.log("id: ", id);
+            // console.log("id: ", id);
             const data = req.body;
-            console.log("data ", data);
+            // console.log("data ", data);
             const update = {
                 $set: {
                     isAdvertised: data.status
                 }
             };
-            console.log("update: ", update);
+            // console.log("update: ", update);
             let result;
 
             result = await ticketCollection.updateOne({ _id: new ObjectId(id) }, update);
@@ -389,15 +389,15 @@ async function run() {
         app.patch('/users/admin/:id', async (req, res) => {
 
             const id = req.params.id;
-            console.log("id: ", id);
+            // console.log("id: ", id);
             const data = req.body;
-            console.log("data ", data);
+            // console.log("data ", data);
             const update = {
                 $set: {
                     role: data.status
                 }
             };
-            console.log("update: ", update);
+            // console.log("update: ", update);
             let result;
 
             result = await userCollection.updateOne({ _id: new ObjectId(id) }, update);
