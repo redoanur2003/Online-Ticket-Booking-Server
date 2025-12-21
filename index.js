@@ -169,7 +169,7 @@ async function run() {
                     vendorEmail: data.vendorEmail,
                     departureTime: data.departureTime,
                     image: data.image,
-                    verificationStatus: 'pending',
+                    verificationStatus: data.verificationStatus,
                     isAdvertised: false,
                     updatedAt: new Date()
                 }
@@ -191,6 +191,24 @@ async function run() {
         })
 
         //Delete tickets 
+
+        app.delete('/tickets/delete/:id', async (req, res) => {
+            const id = req.params.id;
+            let result;
+            if (ObjectId.isValid(id)) {
+                result = await ticketCollection.deleteOne({ _id: new ObjectId(id) });
+                if (result.deletedCount === 0) {
+                    result = await ticketCollection.deleteOne({ _id: id });
+                }
+            } else {
+                result = await ticketCollection.deleteOne({ _id: id });
+
+            }
+
+            console.log("result is: ", result)
+            res.send(result)
+        })
+
 
         // ticketPurchaseInfo api
 
