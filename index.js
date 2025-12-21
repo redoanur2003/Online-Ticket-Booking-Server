@@ -125,7 +125,7 @@ async function run() {
             res.send(result)
         })
 
-        //ticket info update
+        //ticket info update api need change
 
         app.patch('/tickets/:id', async (req, res) => {
 
@@ -148,6 +148,49 @@ async function run() {
             res.send(result);
 
         })
+
+        //update ticket info
+
+        app.patch('/tickets/vendor/:id', async (req, res) => {
+            const id = req.params.id;
+            const data = req.body;
+            console.log("update data: ", data);
+
+            const update = {
+                $set: {
+                    title: data.title,
+                    from: data.from,
+                    to: data.to,
+                    price: parseInt(data.price),
+                    quantity: parseInt(data.quantity),
+                    transportType: data.transportType,
+                    perks: data.perks || [],
+                    vendorName: data.vendorName,
+                    vendorEmail: data.vendorEmail,
+                    departureTime: data.departureTime,
+                    image: data.image,
+                    verificationStatus: 'pending',
+                    isAdvertised: false,
+                    updatedAt: new Date()
+                }
+            }
+            console.log("update data: ", update);
+
+            let result;
+            if (ObjectId.isValid(id)) {
+                result = await ticketCollection.updateOne({ _id: new ObjectId(id) }, update);
+                if (result.matchedCount === 0) {
+                    result = await ticketCollection.updateOne({ _id: id }, update);
+                }
+            } else {
+                result = await ticketCollection.updateOne({ _id: id }, update);
+            }
+
+            console.log("result is: ", result)
+            res.send(result)
+        })
+
+        //Delete tickets 
 
         // ticketPurchaseInfo api
 
