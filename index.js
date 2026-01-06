@@ -221,7 +221,7 @@ async function run() {
                     departureTime: data.departureTime,
                     image: data.image,
                     verificationStatus: data.verificationStatus,
-                    isAdvertised: false,
+                    isAdvertised: data.isAdvertised,
                     updatedAt: new Date()
                 }
             }
