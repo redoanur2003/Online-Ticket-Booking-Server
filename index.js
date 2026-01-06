@@ -221,11 +221,10 @@ async function run() {
                     departureTime: data.departureTime,
                     image: data.image,
                     verificationStatus: data.verificationStatus,
-                    isAdvertised: data.isAdvertised,
                     updatedAt: new Date()
                 }
             }
-            // console.log("update data: ", update);
+            console.log("update data: ", update);
 
             let result;
             if (ObjectId.isValid(id)) {
@@ -237,7 +236,7 @@ async function run() {
                 result = await ticketCollection.updateOne({ _id: id }, update);
             }
 
-            // console.log("result is: ", result)
+            console.log("result is: ", result)
             res.send(result)
         })
 
